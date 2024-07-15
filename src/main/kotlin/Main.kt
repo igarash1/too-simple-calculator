@@ -21,6 +21,15 @@ fun App() {
     var op: Operator by remember { mutableStateOf(Operator.Add(BigDecimal(0))) }
     var displayNumber by remember { mutableStateOf(BigDecimal(0)) }
 
+    @Composable
+    fun buttonNum(num: Int) {
+        Button(onClick = {
+            displayNumber = displayNumber.addDigit(num)
+        }) {
+            Text(num.toString())
+        }
+    }
+
     MaterialTheme(colors = darkColors(primary = Color(0xffffeb46))) {
         Surface(color = Color(0xff91a4fc)) {
             Column {
@@ -61,21 +70,9 @@ fun App() {
                 }
 
                 myRow {
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(1)
-                    }) {
-                        Text("1")
-                    }
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(2)
-                    }) {
-                        Text("2")
-                    }
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(3)
-                    }) {
-                        Text("3")
-                    }
+                    buttonNum(1)
+                    buttonNum(2)
+                    buttonNum(3)
                     Button(onClick = {
                         op = Operator.Add(op.calculate(displayNumber))
                         displayNumber = BigDecimal(0)
@@ -85,21 +82,9 @@ fun App() {
                 }
 
                 myRow {
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(4)
-                    }) {
-                        Text("4")
-                    }
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(5)
-                    }) {
-                        Text("5")
-                    }
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(6)
-                    }) {
-                        Text("6")
-                    }
+                    buttonNum(4)
+                    buttonNum(5)
+                    buttonNum(6)
                     Button(onClick = {
                         op = Operator.Mult(op.calculate(displayNumber))
                         displayNumber = BigDecimal(0)
@@ -109,21 +94,9 @@ fun App() {
                 }
 
                 myRow {
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(7)
-                    }) {
-                        Text("7")
-                    }
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(8)
-                    }) {
-                        Text("8")
-                    }
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(9)
-                    }) {
-                        Text("9")
-                    }
+                    buttonNum(7)
+                    buttonNum(8)
+                    buttonNum(9)
                     Button(onClick = {
                         op = Operator.Sub(op.calculate(displayNumber))
                         displayNumber = BigDecimal(0)
@@ -133,11 +106,7 @@ fun App() {
                 }
 
                 myRow {
-                    Button(onClick = {
-                        displayNumber = displayNumber.addDigit(0)
-                    }) {
-                        Text("0")
-                    }
+                    buttonNum(0)
                     Button(onClick = {
                         displayNumber = displayNumber.addDigit(0)
                         displayNumber = displayNumber.addDigit(0)
@@ -165,7 +134,7 @@ fun App() {
 @Composable
 fun myRow(
     content:
-        @Composable()
+        @Composable
         (RowScope.() -> Unit),
 ) {
     Row(
