@@ -6,9 +6,9 @@
 Too simple example calculator with Desktop Compose. For educational purpose.
 
 
-## Run
+## Build and run
 
-No binaries. Please run with gradle or IntelliJ.
+No pre-built binaries. Please run with Gradle or IntelliJ.
 
 ```shell
 $ gradle run
@@ -20,4 +20,5 @@ $ gradle run
 
 ## Future improvement
 
-- Keyboard numeral input
+- Operator input from keyboard
+- Delete the last digit with BackSpace
