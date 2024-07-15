@@ -1,9 +1,9 @@
-# Too Simple Desktop Calculator with Desktop Compose
+# Too Simple Desktop Calculator with Jetpack Compose
 
 
 ## Overview
 
-Too simple example calculator with Desktop Compose. For educational purpose.
+Too simple calculator with Desktop Compose.
 
 
 ## Build and run
@@ -22,3 +22,6 @@ $ gradle run
 
 - Operator input from keyboard
 - Delete the last digit with BackSpace
+
+## License
+MIT
