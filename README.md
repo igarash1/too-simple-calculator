@@ -20,5 +20,4 @@ $ gradle run
 
 ## Future improvement
 
-- Decimal support
 - Keyboard numeral input

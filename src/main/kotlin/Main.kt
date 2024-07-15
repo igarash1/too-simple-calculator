@@ -17,6 +17,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Composable
 fun myRow(
@@ -32,34 +33,70 @@ fun myRow(
     )
 }
 
-fun BigDecimal.addDigit(digit: Int) = this.multiply(BigDecimal(10)).plus(BigDecimal(digit))
+enum class InputState {
+    NUMBER,
+    FRACTIONAL,
+}
 
 @Composable
 @Preview
 fun App() {
     var op: Operator by remember { mutableStateOf(Operator.Add(BigDecimal(0))) }
+    var inputState: InputState by remember { mutableStateOf(InputState.NUMBER) }
     var displayNumber by remember { mutableStateOf(BigDecimal(0)) }
+    var fracNth by remember { mutableStateOf(0) }
+
+    // Utility functions
+    fun BigDecimal.round() = this.setScale(6, RoundingMode.HALF_UP)
+
+    fun BigDecimal.trim() = this.round().toString().dropLastWhile { it  == '0' }
+
+    fun BigDecimal.trimAndPad(): String {
+        val trimmed = this.trim()
+        val fractionalLength = trimmed.dropWhile { it != '.' }.length + 1
+        val padded = if (fracNth < fractionalLength) {
+            trimmed
+        } else {
+            trimmed.padEnd(trimmed.length + fracNth - fractionalLength, '0')
+        }
+        return padded.takeIf { it.isNotEmpty() } ?: "0"
+    }
+
+    fun BigDecimal.addDigit(digit: Int, inputState: InputState) =
+        if (inputState == InputState.NUMBER) {
+            this.multiply(BigDecimal(10)).plus(BigDecimal(digit))
+        } else {
+            fracNth++
+            this.plus(BigDecimal(digit).scaleByPowerOfTen(-fracNth))
+        }
 
     @Composable
     fun buttonNum(num: Int) {
         Button(onClick = {
-            displayNumber = displayNumber.addDigit(num)
+            displayNumber = displayNumber.addDigit(num, inputState)
         }) {
             Text(num.toString())
         }
     }
 
+    fun resetStates() {
+        displayNumber = BigDecimal(0)
+        inputState = InputState.NUMBER
+        fracNth = 0
+    }
+
+    // Layout
     MaterialTheme(colors = darkColors(primary = Color(0xffffeb46))) {
         Surface(color = Color(0xff91a4fc)) {
             Column {
                 Column (modifier = Modifier.align(Alignment.End)) {
                     Text(
-                        op.x.toPlainString(),
+                        op.x.trim(),
                         fontSize = 20.sp,
                         modifier = Modifier.align(Alignment.End)
                     )
                     Text(
-                        displayNumber.toPlainString(),
+                        displayNumber.trimAndPad(),
                         fontSize = 30.sp,
                         modifier = Modifier.align(Alignment.End)
                     )
@@ -67,27 +104,24 @@ fun App() {
 
                 myRow {
                     Button(onClick = {
-                        if (displayNumber == BigDecimal(0)) {
-                            op = Operator.Add(BigDecimal(0))
-                        }
-                        displayNumber = BigDecimal(0)
+                        resetStates()
                     }) {
                         Text("C")
                     }
                     Button(onClick = {
-                        // TODO: decimal support
+                        inputState = InputState.FRACTIONAL
                     }) {
                         Text(".")
                     }
                     Button(onClick = {
                         op = Operator.Pow(op.calculate(displayNumber))
-                        displayNumber = BigDecimal(0)
+                        resetStates()
                     }) {
                         Text("x^y")
                     }
                     Button(onClick = {
                         op = Operator.Add(BigDecimal(0))
-                        displayNumber = BigDecimal(0)
+                        resetStates()
                     }) {
                         Text("AC")
                     }
@@ -97,7 +131,7 @@ fun App() {
                     (1..3).forEach { buttonNum(it) }
                     Button(onClick = {
                         op = Operator.Add(op.calculate(displayNumber))
-                        displayNumber = BigDecimal(0)
+                        resetStates()
                     }) {
                         Text("+")
                     }
@@ -107,7 +141,7 @@ fun App() {
                     (4..6).forEach { buttonNum(it) }
                     Button(onClick = {
                         op = Operator.Mult(op.calculate(displayNumber))
-                        displayNumber = BigDecimal(0)
+                        resetStates()
                     }) {
                         Text("x")
                     }
@@ -117,7 +151,7 @@ fun App() {
                     (7..9).forEach { buttonNum(it) }
                     Button(onClick = {
                         op = Operator.Sub(op.calculate(displayNumber))
-                        displayNumber = BigDecimal(0)
+                        resetStates()
                     }) {
                         Text("-")
                     }
@@ -126,8 +160,8 @@ fun App() {
                 myRow {
                     buttonNum(0)
                     Button(onClick = {
-                        displayNumber = displayNumber.addDigit(0)
-                        displayNumber = displayNumber.addDigit(0)
+                        displayNumber = displayNumber.addDigit(0, inputState)
+                        displayNumber = displayNumber.addDigit(0, inputState)
                     }) {
                         Text("00")
                     }
@@ -138,8 +172,8 @@ fun App() {
                         Text("=")
                     }
                     Button(onClick = {
-                        op = Operator.Div(op.calculate(displayNumber))
-                        displayNumber = BigDecimal(0)
+                        op = Operator.Div(op.calculate(displayNumber.round()))
+                        resetStates()
                     }) {
                         Text("/")
                     }
