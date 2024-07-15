@@ -19,6 +19,22 @@ import androidx.compose.ui.window.rememberWindowState
 import java.math.BigDecimal
 
 @Composable
+fun myRow(
+    content:
+    @Composable
+    (RowScope.() -> Unit),
+) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        content = content,
+    )
+}
+
+fun BigDecimal.addDigit(digit: Int) = this.multiply(BigDecimal(10)).plus(BigDecimal(digit))
+
+@Composable
 @Preview
 fun App() {
     var op: Operator by remember { mutableStateOf(Operator.Add(BigDecimal(0))) }
@@ -36,11 +52,16 @@ fun App() {
     MaterialTheme(colors = darkColors(primary = Color(0xffffeb46))) {
         Surface(color = Color(0xff91a4fc)) {
             Column {
-                Column(modifier = Modifier.align(Alignment.End)) {
-                    Text(op.x.toPlainString(), fontSize = 20.sp)
+                Column (modifier = Modifier.align(Alignment.End)) {
+                    Text(
+                        op.x.toPlainString(),
+                        fontSize = 20.sp,
+                        modifier = Modifier.align(Alignment.End)
+                    )
                     Text(
                         displayNumber.toPlainString(),
                         fontSize = 30.sp,
+                        modifier = Modifier.align(Alignment.End)
                     )
                 }
 
@@ -73,9 +94,7 @@ fun App() {
                 }
 
                 myRow {
-                    buttonNum(1)
-                    buttonNum(2)
-                    buttonNum(3)
+                    (1..3).forEach { buttonNum(it) }
                     Button(onClick = {
                         op = Operator.Add(op.calculate(displayNumber))
                         displayNumber = BigDecimal(0)
@@ -85,9 +104,7 @@ fun App() {
                 }
 
                 myRow {
-                    buttonNum(4)
-                    buttonNum(5)
-                    buttonNum(6)
+                    (4..6).forEach { buttonNum(it) }
                     Button(onClick = {
                         op = Operator.Mult(op.calculate(displayNumber))
                         displayNumber = BigDecimal(0)
@@ -97,9 +114,7 @@ fun App() {
                 }
 
                 myRow {
-                    buttonNum(7)
-                    buttonNum(8)
-                    buttonNum(9)
+                    (7..9).forEach { buttonNum(it) }
                     Button(onClick = {
                         op = Operator.Sub(op.calculate(displayNumber))
                         displayNumber = BigDecimal(0)
@@ -133,22 +148,6 @@ fun App() {
         }
     }
 }
-
-@Composable
-fun myRow(
-    content:
-        @Composable
-        (RowScope.() -> Unit),
-) {
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        content = content,
-    )
-}
-
-fun BigDecimal.addDigit(digit: Int) = this.multiply(BigDecimal(10)).plus(BigDecimal(digit))
 
 fun main() =
     application {
