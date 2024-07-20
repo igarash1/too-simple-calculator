@@ -24,4 +24,4 @@ $ gradle run
 - Delete the last digit with BackSpace
 
 ## License
-MIT
+Apache License Version 2.0
